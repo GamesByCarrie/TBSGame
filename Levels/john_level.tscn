@@ -1,23 +1,77 @@
 [gd_scene format=3 uid="uid://dn6x83num2r64"]
 
 [ext_resource type="Script" uid="uid://bcqvxyuih3eo" path="res://Scripts/Input Management/CameraInput.cs" id="1_16xgf"]
+[ext_resource type="Texture2D" uid="uid://bv4dajf0hohjn" path="res://Assets/UI/Camera/yaw_left_45.png" id="2_v0l5c"]
+[ext_resource type="Texture2D" uid="uid://c31beyo3i6gvb" path="res://Assets/UI/Camera/yaw_right_45.png" id="3_fhq3u"]
+[ext_resource type="Texture2D" uid="uid://cvfe10k02ktnq" path="res://Assets/UI/Camera/pitch_up_45.png" id="4_kt2h0"]
+[ext_resource type="Texture2D" uid="uid://ebpo540vd5xr" path="res://Assets/UI/Camera/pitch_down_45.png" id="5_73x4q"]
+[ext_resource type="Texture2D" uid="uid://bkc3rygvjp3id" path="res://Assets/UI/Camera/roll_right_45.png" id="6_csmht"]
+[ext_resource type="Texture2D" uid="uid://dmargcgk2vsn4" path="res://Assets/UI/Camera/roll_left_45.png" id="7_ccq6p"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_633q2"]
 
 [node name="JohnLevel" type="Node3D" unique_id=203115950]
 
-[node name="Rubiks Cube" type="Node3D" parent="." unique_id=1841272622]
+[node name="RubiksCube" type="Node3D" parent="." unique_id=1841272622]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Rubiks Cube" unique_id=1531309016]
+[node name="CubeMesh" type="MeshInstance3D" parent="RubiksCube" unique_id=1531309016]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
 mesh = SubResource("BoxMesh_633q2")
 skeleton = NodePath("../..")
 
-[node name="CameraPivot" type="Node3D" parent="Rubiks Cube" unique_id=1027427366]
-unique_name_in_owner = true
-transform = Transform3D(0.49999997, -0.61237234, 0.61237234, 0, 0.7071066, 0.7071066, -0.86602545, -0.35355327, 0.35355327, 0, 0, 0)
+[node name="MainCamera" type="Node3D" parent="RubiksCube" unique_id=1027427366]
+transform = Transform3D(1, 0, 0, 0, 0.70710665, 0.7071066, 0, -0.70710665, 0.7071066, 0, 0, 0)
 script = ExtResource("1_16xgf")
 
-[node name="Camera3D" type="Camera3D" parent="Rubiks Cube/CameraPivot" unique_id=1842959680]
-unique_name_in_owner = true
+[node name="Camera3D" type="Camera3D" parent="RubiksCube/MainCamera" unique_id=1842959680]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.5)
+
+[node name="CameraRotateButtons" type="CenterContainer" parent="." unique_id=36162978]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -148.0
+offset_bottom = 72.0
+grow_horizontal = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="CameraRotateButtons" unique_id=2080540889]
+layout_mode = 2
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+
+[node name="GridContainer" type="GridContainer" parent="CameraRotateButtons/MarginContainer" unique_id=1774077501]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="YawLeft" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=951022975]
+layout_mode = 2
+icon = ExtResource("2_v0l5c")
+
+[node name="YawRight" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=1483315047]
+layout_mode = 2
+icon = ExtResource("3_fhq3u")
+
+[node name="PitchUp" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=183268522]
+layout_mode = 2
+icon = ExtResource("4_kt2h0")
+
+[node name="PitchDown" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=7172722]
+layout_mode = 2
+icon = ExtResource("5_73x4q")
+
+[node name="RollRight" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=1099055915]
+layout_mode = 2
+icon = ExtResource("6_csmht")
+
+[node name="RollLeft" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=838787056]
+layout_mode = 2
+icon = ExtResource("7_ccq6p")
+
+[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/YawLeft" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, 1, 0)]]
+[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/YawRight" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, -1, 0)]]
+[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/PitchUp" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(1, 0, 0)]]
+[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/PitchDown" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(-1, 0, 0)]]
+[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/RollRight" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, 0, 1)]]
+[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/RollLeft" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, 0, -1)]]
