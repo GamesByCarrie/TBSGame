@@ -8,9 +8,29 @@
 [ext_resource type="Texture2D" uid="uid://bkc3rygvjp3id" path="res://Assets/UI/Camera/roll_right_45.png" id="6_csmht"]
 [ext_resource type="Texture2D" uid="uid://dmargcgk2vsn4" path="res://Assets/UI/Camera/roll_left_45.png" id="7_ccq6p"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_kt2h0"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_73x4q"]
+sky_material = SubResource("ProceduralSkyMaterial_kt2h0")
+
+[sub_resource type="Environment" id="Environment_csmht"]
+background_mode = 2
+sky = SubResource("Sky_73x4q")
+tonemap_mode = 2
+glow_enabled = true
+
 [sub_resource type="BoxMesh" id="BoxMesh_633q2"]
 
 [node name="JohnLevel" type="Node3D" unique_id=203115950]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1944084985]
+environment = SubResource("Environment_csmht")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1128536453]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
 
 [node name="RubiksCube" type="Node3D" parent="." unique_id=1841272622]
 
@@ -18,15 +38,13 @@
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
 mesh = SubResource("BoxMesh_633q2")
 skeleton = NodePath("../..")
-
-[node name="MainCamera" type="Node3D" parent="RubiksCube" unique_id=1027427366]
-transform = Transform3D(1, 0, 0, 0, 0.70710665, 0.7071066, 0, -0.70710665, 0.7071066, 0, 0, 0)
 script = ExtResource("1_16xgf")
 
-[node name="Camera3D" type="Camera3D" parent="RubiksCube/MainCamera" unique_id=1842959680]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.5)
+[node name="MainCamera" type="Camera3D" parent="RubiksCube" unique_id=1842959680]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 5, 5)
 
-[node name="CameraRotateButtons" type="CenterContainer" parent="." unique_id=36162978]
+[node name="CubeRotateButtons" type="CenterContainer" parent="." unique_id=36162978]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -34,44 +52,44 @@ offset_left = -148.0
 offset_bottom = 72.0
 grow_horizontal = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="CameraRotateButtons" unique_id=2080540889]
+[node name="MarginContainer" type="MarginContainer" parent="CubeRotateButtons" unique_id=2080540889]
 layout_mode = 2
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 
-[node name="GridContainer" type="GridContainer" parent="CameraRotateButtons/MarginContainer" unique_id=1774077501]
+[node name="GridContainer" type="GridContainer" parent="CubeRotateButtons/MarginContainer" unique_id=1774077501]
 layout_mode = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 16
 columns = 2
 
-[node name="YawLeft" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=951022975]
+[node name="YawLeft" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=951022975]
 layout_mode = 2
 icon = ExtResource("2_v0l5c")
 
-[node name="YawRight" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=1483315047]
+[node name="YawRight" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=1483315047]
 layout_mode = 2
 icon = ExtResource("3_fhq3u")
 
-[node name="PitchUp" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=183268522]
+[node name="PitchUp" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=183268522]
 layout_mode = 2
 icon = ExtResource("4_kt2h0")
 
-[node name="PitchDown" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=7172722]
+[node name="PitchDown" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=7172722]
 layout_mode = 2
 icon = ExtResource("5_73x4q")
 
-[node name="RollRight" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=1099055915]
+[node name="RollRight" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=1099055915]
 layout_mode = 2
 icon = ExtResource("6_csmht")
 
-[node name="RollLeft" type="Button" parent="CameraRotateButtons/MarginContainer/GridContainer" unique_id=838787056]
+[node name="RollLeft" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=838787056]
 layout_mode = 2
 icon = ExtResource("7_ccq6p")
 
-[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/YawLeft" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, 1, 0)]]
-[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/YawRight" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, -1, 0)]]
-[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/PitchUp" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(1, 0, 0)]]
-[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/PitchDown" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(-1, 0, 0)]]
-[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/RollRight" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, 0, 1)]]
-[connection signal="pressed" from="CameraRotateButtons/MarginContainer/GridContainer/RollLeft" to="RubiksCube/MainCamera" method="GUIInput" binds= [Vector3(0, 0, -1)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/YawLeft" to="RubiksCube/CubeMesh" method="GUIInput" binds= [Vector3(0, -1, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/YawRight" to="RubiksCube/CubeMesh" method="GUIInput" binds= [Vector3(0, 1, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchUp" to="RubiksCube/CubeMesh" method="GUIInput" binds= [Vector3(-1, 0, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchDown" to="RubiksCube/CubeMesh" method="GUIInput" binds= [Vector3(1, 0, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollRight" to="RubiksCube/CubeMesh" method="GUIInput" binds= [Vector3(0, 0, -1)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollLeft" to="RubiksCube/CubeMesh" method="GUIInput" binds= [Vector3(0, 0, 1)]]

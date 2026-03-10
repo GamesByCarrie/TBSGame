@@ -1,112 +1,77 @@
 using Godot;
 
-public partial class CameraInput : Node3D
+public partial class CameraInput : MeshInstance3D
 {
 	private Camera3D camera = null;
 
 	[ExportCategory("Rotation Settings")]
 	[Export(PropertyHint.Range, "0.1, 1.0")] private float mouseSensitivity = 0.5f;
-	[Export(PropertyHint.Range, "0.05, 1.0")] private float rotationSpeed = 0.1f;
+	[Export(PropertyHint.Range, "0.05, 1.0, suffix:s")] private float rotationDuration = 0.1f;
 	[Export(PropertyHint.Range, "30, 90, 15, radians_as_degrees")] private float buttonRotateStep = Mathf.Pi / 4f;
 	private Vector2 mouseDirection = Vector2.Zero;
 	private bool altControlsOn = false;
 	private bool canRotate = false;
 	private bool canRoll = false;
-	private Quaternion targetRotation = Quaternion.Identity;
-	private float currentRotationAmount = 0f;
+	private Tween rotationTween = null;
 
 	[ExportCategory("Zoom Settings")]
-	[Export(PropertyHint.Range, "0.05, 1.0")] private float zoomSpeed = 0.1f;
+	[Export(PropertyHint.Range, "0.05, 1.0, suffix:s")] private float zoomDuration = 0.1f;
 	[Export(PropertyHint.Range, "0.5, 2.0, suffix:m")] private float zoomStep = 1f;
 	[Export(PropertyHint.None, "suffix:m")] private float minZoom = 4f;
 	[Export(PropertyHint.None, "suffix:m")] private float maxZoom = 7.5f;
-	private Vector3 targetPositionLocal = Vector3.Zero;
-	private float currentZoomAmount = 0f;
+	private Tween zoomTween = null;
 
 	// Initializing variables
     public override void _Ready()
 	{
-		camera = GetNode<Camera3D>("Camera3D");
+		camera = GetNode<Camera3D>("%MainCamera");
 	}
 
-	// Applying inputs
+	// Applying inputs to the cube
     public override void _PhysicsProcess(double delta)
 	{
-		// Rotate the camera via mouse movement
-		Rotate(GlobalBasis.X.Normalized(), -mouseDirection.Y * (float)delta);
+		// Rotating the cube
+		Rotate(Vector3.Right, mouseDirection.Y * (float)delta);
 
-		// Rotate or roll the camera
 		if (canRotate)
 		{
-			Rotate(GlobalBasis.Y.Normalized(), -mouseDirection.X * (float)delta);	
+			Rotate(Vector3.Up, mouseDirection.X * (float)delta);	
 		}
 		else if (canRoll)
 		{
-			Rotate(GlobalBasis.Z.Normalized(), mouseDirection.X * (float)delta);
+			Rotate(Vector3.Forward, mouseDirection.X * (float)delta);
 		}
 
 		mouseDirection = Vector2.Zero;
-
-		// Rotate the camera via button press
-		if (targetRotation != Quaternion.Identity)
-		{
-			// Slerp the rotation for smooth movement
-			currentRotationAmount = Mathf.Min(currentRotationAmount + rotationSpeed, 1f);
-			GlobalBasis = new Basis(GlobalBasis.GetRotationQuaternion().Slerp(targetRotation, currentRotationAmount));
-
-			// Reset when the rotation is done
-			if (currentRotationAmount == 1f)
-			{
-				currentRotationAmount = 0f;
-				targetRotation = Quaternion.Identity;
-			}
-		}
-
-		// Zoom the camera
-		if (targetPositionLocal.Z > 0)
-		{
-			// Lerp the camera position for smooth movement
-			currentZoomAmount = Mathf.Min(currentZoomAmount + zoomSpeed, 1f);
-			camera.Position = camera.Position.Lerp(targetPositionLocal, currentZoomAmount);
-
-			// Reset when the movement is done
-			if (currentZoomAmount == 1f)
-			{
-				currentZoomAmount = 0f;
-				targetPositionLocal = Vector3.Zero;
-			}
-		}
 	}
 
 	/// <summary>
-	/// Handles input from the camera rotation Buttons. All Buttons are
+	/// Handles input from the cube rotation Buttons. All Buttons are
 	/// connected here via Signals and can be viewed from the editor.
 	/// This function should NEVER be called directly.
 	/// </summary>
-	/// <param name="direction">The direction the camera should rotate</param>
-	private void GUIInput(Vector3 direction)
+	/// <param name="axis">The axis the cube should rotate about</param>
+	private void GUIInput(Vector3 axis)
 	{
-		// Determine which axis and direction to use
-		bool shouldRotateOpposite = direction.Abs() != direction;
-		Vector3 rotationAxis = GlobalBasis.Z;
+		// Get necessary data for the rotation
+		Quaternion startingQuaternion = GlobalBasis.GetRotationQuaternion();
+		Quaternion targetQuaternion = GlobalBasis.Rotated(axis, buttonRotateStep).GetRotationQuaternion();
+		Vector3 originalScale = GlobalBasis.Scale;
 
-		if (direction.X != 0f)
-		{
-			rotationAxis = GlobalBasis.X;
-		}
-		else if (direction.Y != 0f)
-		{
-			rotationAxis = GlobalBasis.Y;
-		}
+		// Slerp the rotation in a Tween for smooth movement
+		rotationTween?.Kill();
+		rotationTween = null;
 
-		// Set the target rotation and reset current rotation progress.
-		targetRotation = GlobalBasis.Rotated(rotationAxis.Normalized(), shouldRotateOpposite ? -buttonRotateStep : buttonRotateStep).GetRotationQuaternion();
-		currentRotationAmount = 0f;
+		rotationTween = CreateTween();
+		// Slerp has to be manually called in the Tween because the default functionality for rotation in Tweens uses Euler angles
+		rotationTween.TweenMethod(Callable.From((float weight) => GlobalBasis = new Basis(startingQuaternion.Slerp(targetQuaternion, weight)).Scaled(originalScale)), 0.0f, 1.0f, rotationDuration);
 	}
 
 	// Input handling
     public override void _UnhandledInput(InputEvent inputEvent)
     {
+		Vector3 targetPositionLocal = Vector3.Zero;
+
 		// Toggles alternate camera controls
 		if (inputEvent.IsActionPressed("toggle_alt_controls"))
 		{
@@ -153,16 +118,26 @@ public partial class CameraInput : Node3D
 			mouseDirection = (inputEvent as InputEventMouseMotion).ScreenRelative * mouseSensitivity;
 		}
 
-		// Zoom in or out. Sets target position in local space and resets current zooming
+		// Set target position in local space
 		if (inputEvent.IsActionReleased("zoom_in_cam"))
 		{
-			targetPositionLocal = new Vector3(camera.Position.X, camera.Position.Y, Mathf.Max(camera.Position.Z - zoomStep, minZoom));
-			currentZoomAmount = 0f;
+			targetPositionLocal = camera.Position - camera.Basis.Z.Normalized() * zoomStep;
+			targetPositionLocal = new Vector3(targetPositionLocal.X, Mathf.Max(targetPositionLocal.Y, minZoom), Mathf.Max(targetPositionLocal.Z, minZoom));
 		}
 		else if (inputEvent.IsActionReleased("zoom_out_cam"))
 		{
-			targetPositionLocal = new Vector3(camera.Position.X, camera.Position.Y, Mathf.Min(camera.Position.Z + zoomStep, maxZoom));
-			currentZoomAmount = 0f;
+			targetPositionLocal = camera.Position + camera.Basis.Z.Normalized() * zoomStep;
+			targetPositionLocal = new Vector3(targetPositionLocal.X, Mathf.Min(targetPositionLocal.Y, maxZoom), Mathf.Min(targetPositionLocal.Z, maxZoom));
+		}
+
+		// Zoom the camera in or out with a Tween for smooth movement
+		if (inputEvent.IsActionReleased("zoom_in_cam") || inputEvent.IsActionReleased("zoom_out_cam"))
+		{
+			zoomTween?.Kill();
+			zoomTween = null;
+
+			zoomTween = CreateTween();
+			zoomTween.TweenProperty(camera, "position", targetPositionLocal, zoomDuration);
 		}
     }
 }
