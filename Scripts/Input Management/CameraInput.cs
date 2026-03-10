@@ -33,16 +33,16 @@ public partial class CameraInput : Node3D
     public override void _PhysicsProcess(double delta)
 	{
 		// Rotate the camera via mouse movement
-		Rotate(GlobalBasis.X, -mouseDirection.Y * (float)delta);
+		Rotate(GlobalBasis.X.Normalized(), -mouseDirection.Y * (float)delta);
 
 		// Rotate or roll the camera
 		if (canRotate)
 		{
-			Rotate(GlobalBasis.Y, -mouseDirection.X * (float)delta);	
+			Rotate(GlobalBasis.Y.Normalized(), -mouseDirection.X * (float)delta);	
 		}
 		else if (canRoll)
 		{
-			Rotate(GlobalBasis.Z, mouseDirection.X * (float)delta);
+			Rotate(GlobalBasis.Z.Normalized(), mouseDirection.X * (float)delta);
 		}
 
 		mouseDirection = Vector2.Zero;
