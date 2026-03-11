@@ -7,7 +7,7 @@ public partial class RubiksCube : Node3D
 	public const float cubeletSize = 0.9f;
 	public const float cubeletSpacing = 1.05f;
 	public Cubelet[,,] cubelets = new Cubelet[cubeSize, cubeSize, cubeSize];
-	public Dictionary<CubeFaceDirection, CubeletFace[]> faceTiles = new Dictionary<CubeFaceDirection, CubeletFace[]>();
+	public Dictionary<CubeFaceDirection, List<Cubelet>> cubeletsByFace = new Dictionary<CubeFaceDirection, List<Cubelet>>();
 	public List<RotationalPlane> planes = new();
 
 	public Node3D PlaneContainer;
@@ -19,9 +19,9 @@ public partial class RubiksCube : Node3D
 	{
 		PlaneContainer = GetNode<Node3D>("CubeMesh/Planes");
 		CubeletContainer = GetNode<Node3D>("CubeMesh/Cubelets");
+		CreateCubelets();
 		CreateFaceArrays();
 		CreatePlanes();
-		CreateCubelets();
 		CallDeferred(nameof(ColorFaces));
 	}
 
@@ -33,7 +33,24 @@ public partial class RubiksCube : Node3D
 	void CreateFaceArrays()
 	{
 		foreach(CubeFaceDirection dir in System.Enum.GetValues(typeof(CubeFaceDirection)))
-			faceTiles[dir] = new CubeletFace[cubeSize * cubeSize];
+		{
+			cubeletsByFace[dir] = new List<Cubelet>(cubeSize * cubeSize);
+
+			foreach (Cubelet cubelet in cubelets)
+			{
+				if (cubelet == null) continue;
+
+				if (cubelet.activeFaces.ContainsKey(dir))
+				{
+					cubeletsByFace[dir].Add(cubelet);
+
+					if (cubeletsByFace[dir].Count == cubeletsByFace[dir].Capacity)
+					{
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	void CreateCubelets()
