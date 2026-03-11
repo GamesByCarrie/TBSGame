@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dxvjejtr2m8q0"]
+
+[ext_resource type="Script" uid="uid://b0y2jk0e7k6cw" path="res://RubiksCubeSystem/Cubelet.cs" id="1_tdvew"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_tdvew"]
+size = Vector3(0.89, 0.89, 0.89)
+
+[node name="Cubelet" type="Node3D" unique_id=1231323313]
+script = ExtResource("1_tdvew")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1149125808]
+mesh = SubResource("BoxMesh_tdvew")
+
+[node name="CubeletFaces" type="Node3D" parent="." unique_id=424533970]
