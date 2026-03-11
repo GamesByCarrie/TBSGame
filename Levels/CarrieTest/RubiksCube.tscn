@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://svsnle67od38"]
+
+[ext_resource type="Script" uid="uid://biv5rx1apnr80" path="res://Scripts/RubiksCubeSystem/RubiksCube.cs" id="1_po0kd"]
+[ext_resource type="Script" uid="uid://bcqvxyuih3eo" path="res://Scripts/Input Management/CameraInput.cs" id="2_f7f1b"]
+[ext_resource type="Texture2D" uid="uid://bv4dajf0hohjn" path="res://Assets/UI/Camera/yaw_left_45.png" id="3_j4ha3"]
+[ext_resource type="Texture2D" uid="uid://c31beyo3i6gvb" path="res://Assets/UI/Camera/yaw_right_45.png" id="4_482yt"]
+[ext_resource type="Texture2D" uid="uid://cvfe10k02ktnq" path="res://Assets/UI/Camera/pitch_up_45.png" id="5_wmo6k"]
+[ext_resource type="Texture2D" uid="uid://ebpo540vd5xr" path="res://Assets/UI/Camera/pitch_down_45.png" id="6_eita6"]
+[ext_resource type="Texture2D" uid="uid://bkc3rygvjp3id" path="res://Assets/UI/Camera/roll_right_45.png" id="7_f7tme"]
+[ext_resource type="Texture2D" uid="uid://dmargcgk2vsn4" path="res://Assets/UI/Camera/roll_left_45.png" id="8_iruna"]
+
+[node name="RubiksCube" type="Node3D" unique_id=2083928370]
+script = ExtResource("1_po0kd")
+
+[node name="CubeMesh" type="Node3D" parent="." unique_id=1192323514 node_paths=PackedStringArray("camera")]
+script = ExtResource("2_f7f1b")
+camera = NodePath("../MainCamera")
+
+[node name="Planes" type="Node3D" parent="CubeMesh" unique_id=1178193326]
+
+[node name="Cubelets" type="Node3D" parent="CubeMesh" unique_id=196145075]
+
+[node name="MainCamera" type="Camera3D" parent="." unique_id=246928549]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 5, 5)
+
+[node name="CubeRotateButtons" type="CenterContainer" parent="." unique_id=184449529]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -148.0
+offset_bottom = 72.0
+grow_horizontal = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="CubeRotateButtons" unique_id=2006541787]
+layout_mode = 2
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+
+[node name="GridContainer" type="GridContainer" parent="CubeRotateButtons/MarginContainer" unique_id=219447011]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="YawLeft" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=2055567017]
+layout_mode = 2
+icon = ExtResource("3_j4ha3")
+
+[node name="YawRight" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=444096506]
+layout_mode = 2
+icon = ExtResource("4_482yt")
+
+[node name="PitchUp" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=483076643]
+layout_mode = 2
+icon = ExtResource("5_wmo6k")
+
+[node name="PitchDown" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=1995631752]
+layout_mode = 2
+icon = ExtResource("6_eita6")
+
+[node name="RollRight" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=156542283]
+layout_mode = 2
+icon = ExtResource("7_f7tme")
+
+[node name="RollLeft" type="Button" parent="CubeRotateButtons/MarginContainer/GridContainer" unique_id=1885804310]
+layout_mode = 2
+icon = ExtResource("8_iruna")
+
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/YawLeft" to="CubeMesh" method="GUIInput" binds= [Vector3(0, -1, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/YawRight" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 1, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchUp" to="CubeMesh" method="GUIInput" binds= [Vector3(-1, 0, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchDown" to="CubeMesh" method="GUIInput" binds= [Vector3(1, 0, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollRight" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 0, -1)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollLeft" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 0, 1)]]

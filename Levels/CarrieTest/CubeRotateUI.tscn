@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://dfv2a3tocvkeq"]
+
+[ext_resource type="Texture2D" uid="uid://bv4dajf0hohjn" path="res://Assets/UI/Camera/yaw_left_45.png" id="1_5qwcb"]
+[ext_resource type="Texture2D" uid="uid://c31beyo3i6gvb" path="res://Assets/UI/Camera/yaw_right_45.png" id="2_qjlrr"]
+[ext_resource type="Texture2D" uid="uid://cvfe10k02ktnq" path="res://Assets/UI/Camera/pitch_up_45.png" id="3_hn0r7"]
+[ext_resource type="Texture2D" uid="uid://ebpo540vd5xr" path="res://Assets/UI/Camera/pitch_down_45.png" id="4_kxx61"]
+[ext_resource type="Texture2D" uid="uid://bkc3rygvjp3id" path="res://Assets/UI/Camera/roll_right_45.png" id="5_ewm6o"]
+[ext_resource type="Texture2D" uid="uid://dmargcgk2vsn4" path="res://Assets/UI/Camera/roll_left_45.png" id="6_s5gmr"]
+
+[node name="CubeRotateButtons" type="CenterContainer" unique_id=115999765]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -148.0
+offset_bottom = 72.0
+grow_horizontal = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1333263467]
+layout_mode = 2
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer" unique_id=1644320079]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="YawLeft" type="Button" parent="MarginContainer/GridContainer" unique_id=800266650]
+layout_mode = 2
+icon = ExtResource("1_5qwcb")
+
+[node name="YawRight" type="Button" parent="MarginContainer/GridContainer" unique_id=967373146]
+layout_mode = 2
+icon = ExtResource("2_qjlrr")
+
+[node name="PitchUp" type="Button" parent="MarginContainer/GridContainer" unique_id=1479936748]
+layout_mode = 2
+icon = ExtResource("3_hn0r7")
+
+[node name="PitchDown" type="Button" parent="MarginContainer/GridContainer" unique_id=1442548583]
+layout_mode = 2
+icon = ExtResource("4_kxx61")
+
+[node name="RollRight" type="Button" parent="MarginContainer/GridContainer" unique_id=1786196718]
+layout_mode = 2
+icon = ExtResource("5_ewm6o")
+
+[node name="RollLeft" type="Button" parent="MarginContainer/GridContainer" unique_id=2117727277]
+layout_mode = 2
+icon = ExtResource("6_s5gmr")
