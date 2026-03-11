@@ -1,30 +1,49 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class Cubelet : Node3D
 {
 	public Vector3I gridPosition;
-	public List<CubeFaceDirection> activeFaces = new();
+	public Dictionary<CubeFaceDirection, CubeletFace> activeFaces = new();
+	Node3D cubeletFaceContainer;
+	PackedScene cubeletFaceScene = GD.Load<PackedScene>("res://CarrieTest/CubeletFace.tscn");
+
+    public override void _Ready()
+    {
+        cubeletFaceContainer = GetNode<Node3D>("CubeletFaces");
+    }
 	
 	public void InitializeCubelet(Vector3I position){
 		gridPosition = position;
-		activeFaces = FindActiveFaces();
+		SpawnActiveFaces();
+	}
+
+	void CreateFace(CubeFaceDirection dir)
+	{
+		CubeletFace cubeletFace = cubeletFaceScene.Instantiate<CubeletFace>();
+		cubeletFaceContainer.AddChild(cubeletFace);
+		cubeletFace.direction = dir;
+		cubeletFace.cubelet = this;
+		cubeletFace.Transform = CubeFaceUtility.GetFaceTransform(dir);
+		activeFaces[dir] = cubeletFace;
 	}
 	
-	public void FindActiveFaces(){
-		activeFaces.clear();
+	public void SpawnActiveFaces(){
+		activeFaces.Clear();
 		int size = RubiksCube.cubeSize;
-		if(gridPosition.x == 0)
-			activeFaces.add(CubeFaceDirection.left);
-		if(gridPosition.x == size - 1)
-			activeFaces.add(CubeFaceDirection.right);
-		if(gridPosition.y == 0)
-			activeFaces.add(CubeFaceDirection.top);
-		if(gridPosition.y == size - 1)
-			activeFaces.add(CubeFaceDirection.bottom);
-		if(gridPosition.z == 0)
-			activeFaces.add(CubeFaceDirection.back);
-		if(gridPosition.z == size - 1)
-			activeFaces.add(CubeFaceDirection.front);
+
+		if(gridPosition.X == 0)
+			CreateFace(CubeFaceDirection.left);
+		if(gridPosition.X == size - 1)
+			CreateFace(CubeFaceDirection.right);
+		if(gridPosition.Y == 0)
+			CreateFace(CubeFaceDirection.down);
+		if(gridPosition.Y == size - 1)
+			CreateFace(CubeFaceDirection.up);
+		if(gridPosition.Z == 0)
+			CreateFace(CubeFaceDirection.forward);
+		if(gridPosition.Z == size - 1)
+			CreateFace(CubeFaceDirection.back);
 	}
 }

@@ -1,9 +1,9 @@
 public enum CubeFaceDirection
 {
-	front,
-	back,
+	up,
+	down,
 	left,
 	right,
-	top,
-	bottom
+	forward,
+	back
 }

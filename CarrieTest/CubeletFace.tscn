@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://d1yacjlcyp0m8"]
+
+[ext_resource type="Script" uid="uid://ccyxcx18isk3p" path="res://RubiksCubeSystem/CubeletFace.cs" id="1_4ustb"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_aqr0y"]
+size = Vector2(0.9, 0.9)
+
+[node name="CubeletFace" type="MeshInstance3D" unique_id=255352354]
+mesh = SubResource("PlaneMesh_aqr0y")
+script = ExtResource("1_4ustb")

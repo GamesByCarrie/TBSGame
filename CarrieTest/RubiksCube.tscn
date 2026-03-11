@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://svsnle67od38"]
+
+[ext_resource type="Script" uid="uid://biv5rx1apnr80" path="res://RubiksCubeSystem/RubiksCube.cs" id="1_po0kd"]
+
+[node name="RubiksCube" type="Node3D" unique_id=2083928370]
+script = ExtResource("1_po0kd")
+
+[node name="Planes" type="Node3D" parent="." unique_id=1178193326]
+
+[node name="Cubelets" type="Node3D" parent="." unique_id=196145075]
