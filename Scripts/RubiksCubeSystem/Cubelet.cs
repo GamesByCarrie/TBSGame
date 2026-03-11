@@ -7,7 +7,7 @@ public partial class Cubelet : Node3D
 	public Vector3I gridPosition;
 	public Dictionary<CubeFaceDirection, CubeletFace> activeFaces = new();
 	Node3D cubeletFaceContainer;
-	PackedScene cubeletFaceScene = GD.Load<PackedScene>("res://CarrieTest/CubeletFace.tscn");
+	PackedScene cubeletFaceScene = GD.Load<PackedScene>("res://Levels/CarrieTest/CubeletFace.tscn");
 
     public override void _Ready()
     {

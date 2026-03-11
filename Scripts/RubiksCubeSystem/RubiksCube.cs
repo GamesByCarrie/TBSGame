@@ -13,12 +13,12 @@ public partial class RubiksCube : Node3D
 	public Node3D PlaneContainer;
 	public Node3D CubeletContainer;
 
-	PackedScene CubeletScene = GD.Load<PackedScene>("res://CarrieTest/Cubelet.tscn");
+	PackedScene CubeletScene = GD.Load<PackedScene>("res://Levels/CarrieTest/Cubelet.tscn");
 	
 	public override void _Ready()
 	{
-		PlaneContainer = GetNode<Node3D>("Planes");
-		CubeletContainer = GetNode<Node3D>("Cubelets");
+		PlaneContainer = GetNode<Node3D>("CubeMesh/Planes");
+		CubeletContainer = GetNode<Node3D>("CubeMesh/Cubelets");
 		CreateFaceArrays();
 		CreatePlanes();
 		CreateCubelets();

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bb0jyinly8g1l"]
+
+[ext_resource type="Script" uid="uid://812hlhlbpm5y" path="res://Scripts/RubiksCubeSystem/RotationalPlane.cs" id="1_wig6l"]
+
+[node name="Plane" type="Node3D" unique_id=1412383539]
+script = ExtResource("1_wig6l")

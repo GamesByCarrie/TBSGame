@@ -1,7 +1,8 @@
 using Godot;
 
-public partial class CameraInput : MeshInstance3D
+public partial class CameraInput : Node3D
 {
+	[Export]
 	private Camera3D camera = null;
 
 	[ExportCategory("Rotation Settings")]
@@ -20,12 +21,6 @@ public partial class CameraInput : MeshInstance3D
 	[Export(PropertyHint.None, "suffix:m")] private float minZoom = 4f;
 	[Export(PropertyHint.None, "suffix:m")] private float maxZoom = 7.5f;
 	private Tween zoomTween = null;
-
-	// Initializing variables
-    public override void _Ready()
-	{
-		camera = GetNode<Camera3D>("%MainCamera");
-	}
 
 	// Applying inputs to the cube
     public override void _PhysicsProcess(double delta)
