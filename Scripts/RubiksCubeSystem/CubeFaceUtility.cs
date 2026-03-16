@@ -3,6 +3,71 @@ using Godot;
 
 public static class CubeFaceUtility
 {
+    // The innermost directions directly correlate with the order faces are constructed in CreateFaceArrays()
+    private static Dictionary<CubeFaceDirection, Dictionary<CubeFaceDirection, CubeFaceDirection>> cubeFaceAdjacencies = new()
+    {
+        { 
+            CubeFaceDirection.up,
+            new()
+            {
+                {CubeFaceDirection.left, CubeFaceDirection.left},
+                {CubeFaceDirection.right, CubeFaceDirection.right},
+                {CubeFaceDirection.forward, CubeFaceDirection.down},
+                {CubeFaceDirection.back, CubeFaceDirection.up},
+            }
+        },
+        { 
+            CubeFaceDirection.down,
+            new()
+            {
+                {CubeFaceDirection.left, CubeFaceDirection.left},
+                {CubeFaceDirection.right, CubeFaceDirection.right},
+                {CubeFaceDirection.forward, CubeFaceDirection.up},
+                {CubeFaceDirection.back, CubeFaceDirection.down},
+            }
+        },
+        { 
+            CubeFaceDirection.left,
+            new()
+            {
+                {CubeFaceDirection.up, CubeFaceDirection.up},
+                {CubeFaceDirection.down, CubeFaceDirection.down},
+                {CubeFaceDirection.forward, CubeFaceDirection.right},
+                {CubeFaceDirection.back, CubeFaceDirection.left},
+            }
+        },
+        { 
+            CubeFaceDirection.right,
+            new()
+            {
+                {CubeFaceDirection.up, CubeFaceDirection.up},
+                {CubeFaceDirection.down, CubeFaceDirection.down},
+                {CubeFaceDirection.forward, CubeFaceDirection.left},
+                {CubeFaceDirection.back, CubeFaceDirection.right},
+            }
+        },
+        { 
+            CubeFaceDirection.forward,
+            new()
+            {
+                {CubeFaceDirection.up, CubeFaceDirection.up},
+                {CubeFaceDirection.down, CubeFaceDirection.down},
+                {CubeFaceDirection.left, CubeFaceDirection.left},
+                {CubeFaceDirection.right, CubeFaceDirection.right},
+            }
+        },
+        { 
+            CubeFaceDirection.back,
+            new()
+            {
+                {CubeFaceDirection.up, CubeFaceDirection.up},
+                {CubeFaceDirection.down, CubeFaceDirection.down},
+                {CubeFaceDirection.left, CubeFaceDirection.right},
+                {CubeFaceDirection.right, CubeFaceDirection.left},
+            }
+        },
+    };
+
     public static Transform3D GetFaceTransform(CubeFaceDirection dir)
     {
         Vector3 normal = GetDirectionVector(dir);
@@ -41,38 +106,58 @@ public static class CubeFaceUtility
 
     /// <summary>
     /// Returns the 4 faces that are cardinally adjacent to currentCubeletFace.
-    /// This function will have to be updated to support more types of movement
-    /// than just 1 space in the cardinal directions.
     /// </summary>
-    /// <param name="currentCubeletFace">The currently occupied CubeletFace</param>
-    /// <param name="currentCubeFace">The set of Cubelets on the currently occupied face of the Rubik's Cube</param>
-    /// <param name="cubeSize">The dimension of the Rubik's Cube</param>
-    public static List<CubeletFace> GetAdjacentFaces(CubeletFace currentCubeletFace, List<Cubelet> currentCubeFace, int cubeSize)
+    public static CubeletFace[] GetAdjacentFaces(CubeletFace cubeletFace)
     {
-        List<CubeletFace> adjacentFaces = new(4);
-        int positionIndex = currentCubeFace.IndexOf(currentCubeletFace.cubelet);
-        Vector2 positionCoordinate = new Vector2(positionIndex % cubeSize, positionIndex / cubeSize);
-
-        // Cubelet faces that go over the edge to a different cube face
-        foreach (CubeletFace face in currentCubeletFace.cubelet.activeFaces.Values)
-        {
-            if (face == currentCubeletFace) continue;
-
-            adjacentFaces.Add(face);
-        }
+        CubeletFace[] adjacentFaces = new CubeletFace[4];
+        List<Cubelet> currentCubeFace = RubiksCube.cubeletsByFace[cubeletFace.direction];
+        int positionIndex = currentCubeFace.IndexOf(cubeletFace.cubelet);
+        Vector2I positionCoordinate = new Vector2I(positionIndex % RubiksCube.cubeSize, positionIndex / RubiksCube.cubeSize);
+        CubeFaceDirection direction = CubeFaceDirection.down;
 
         // Cubelet faces that are on the same cube face
         for (int i = -1; i <= 1; i++)
         {
+            if (positionCoordinate.Y + i < 0 || positionCoordinate.Y + i >= RubiksCube.cubeSize)
+            {
+                continue;
+            }
+
             for (int j = -1; j <= 1; j++)
             {
-                if (Mathf.Abs(i) == Mathf.Abs(j) || positionCoordinate.Y + i < 0 || positionCoordinate.Y + i >= cubeSize || positionCoordinate.X + j < 0 || positionCoordinate.X + j >= cubeSize)
+                if (Mathf.Abs(i) == Mathf.Abs(j) || positionCoordinate.X + j < 0 || positionCoordinate.X + j >= RubiksCube.cubeSize)
+                {
                     continue;
-                        
-                adjacentFaces.Add(currentCubeFace[positionIndex + i * cubeSize + j].activeFaces[currentCubeletFace.direction]);
+                }
+
+                if (i == 0)
+                {
+                    if (j == -1)
+                    {
+                        direction = CubeFaceDirection.left;
+                    }
+                    else
+                    {
+                        direction = CubeFaceDirection.right;
+                    }
+                }
+                else if (i == 1)
+                {
+                    direction = CubeFaceDirection.up;
+                }
+
+                adjacentFaces[(int)direction] = currentCubeFace[positionIndex + i * RubiksCube.cubeSize + j].activeFaces[cubeletFace.direction];
             }
         }
 
-        return adjacentFaces;
+        // Cubelet faces that go over the edge to a different cube face
+        foreach (CubeletFace face in cubeletFace.cubelet.activeFaces.Values)
+        {
+            if (face == cubeletFace) continue;
+
+            adjacentFaces[(int)cubeFaceAdjacencies[cubeletFace.direction][face.direction]] = face;
+        }
+
+        return [..adjacentFaces];
     }
 }

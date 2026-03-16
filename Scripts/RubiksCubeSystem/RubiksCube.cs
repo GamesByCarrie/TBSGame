@@ -7,7 +7,7 @@ public partial class RubiksCube : Node3D
 	public const float cubeletSize = 0.9f;
 	public const float cubeletSpacing = 1.05f;
 	public Cubelet[,,] cubelets = new Cubelet[cubeSize, cubeSize, cubeSize];
-	public Dictionary<CubeFaceDirection, List<Cubelet>> cubeletsByFace = new Dictionary<CubeFaceDirection, List<Cubelet>>();
+	public static Dictionary<CubeFaceDirection, List<Cubelet>> cubeletsByFace = new Dictionary<CubeFaceDirection, List<Cubelet>>();
 	public List<RotationalPlane> planes = new();
 
 	public Node3D PlaneContainer;
@@ -36,17 +36,56 @@ public partial class RubiksCube : Node3D
 		{
 			cubeletsByFace[dir] = new List<Cubelet>(cubeSize * cubeSize);
 
-			foreach (Cubelet cubelet in cubelets)
+			int xStart = 0;
+			int xEnd = cubeSize;
+			int xStep = 1;
+			int yStart = 0;
+			int yEnd = cubeSize;
+			int yStep = 1;
+			int zStart = 0;
+			int zEnd = cubeSize;
+			int zStep = 1;
+			switch (dir)
 			{
-				if (cubelet == null) continue;
+				case CubeFaceDirection.up:
+					yStart = cubeSize - 1;
+					break;
+				case CubeFaceDirection.down:
+					yEnd = 1;
+					zStart = cubeSize - 1;
+					zEnd = -1;
+					zStep = -1;
+					break;
+				case CubeFaceDirection.left:
+					zEnd = 1;
+					xStart = cubeSize - 1;
+					xEnd = -1;
+					xStep = -1;
+					break;
+				case CubeFaceDirection.right:
+					zStart = cubeSize - 1;
+					break;
+				case CubeFaceDirection.forward:
+					zEnd = 1;
+					break;
+				default:
+					zStart = cubeSize - 1;
+					xStart = cubeSize - 1;
+					xEnd = -1;
+					xStep = -1;
+					break;
+			}
 
-				if (cubelet.activeFaces.ContainsKey(dir))
+			for (int z = zStart; z != zEnd; z += zStep)
+			{
+				for (int y = yStart; y != yEnd; y += yStep)
 				{
-					cubeletsByFace[dir].Add(cubelet);
-
-					if (cubeletsByFace[dir].Count == cubeletsByFace[dir].Capacity)
+					for (int x = xStart; x != xEnd; x += xStep)
 					{
-						break;
+						bool leftOrRight = dir == CubeFaceDirection.left || dir == CubeFaceDirection.right;
+						Cubelet cubelet = leftOrRight ? cubelets[z, y, x] : cubelets[x, y, z];
+
+						cubeletsByFace[dir].Add(cubelet);
 					}
 				}
 			}

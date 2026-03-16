@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 public partial class CubeletFace : MeshInstance3D
@@ -6,6 +7,14 @@ public partial class CubeletFace : MeshInstance3D
 	public Vector3I cubeletPosition;
 	public CubeFaceDirection direction;
 	public Transform3D faceTransform;
+	private readonly Dictionary<CubeFaceDirection, CubeletFace> adjacentFaces = new()
+    {
+		{CubeFaceDirection.up, null},
+		{CubeFaceDirection.right, null},
+		{CubeFaceDirection.down, null},
+		{CubeFaceDirection.left, null},
+	};
+	private Entity occupant = null;
 	
 	public void SetColor(Color color)
 	{
