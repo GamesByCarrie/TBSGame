@@ -14,6 +14,8 @@ public partial class RubiksCube : Node3D
 	public Node3D CubeletContainer;
 
 	PackedScene CubeletScene = GD.Load<PackedScene>("res://Levels/CarrieTest/Cubelet.tscn");
+
+	private PackedScene testAgentScene = GD.Load<PackedScene>("res://Prefabs/TEST_AGENT.tscn");
 	
 	public override void _Ready()
 	{
@@ -22,7 +24,7 @@ public partial class RubiksCube : Node3D
 		CreateCubelets();
 		CreateFaceArrays();
 		CreatePlanes();
-		CallDeferred(nameof(ColorFaces));
+		CallDeferred(nameof(InitCubeletFaces));
 	}
 
 	bool IsInside(int x, int y, int z)
@@ -70,6 +72,9 @@ public partial class RubiksCube : Node3D
 					break;
 				default:
 					zStart = cubeSize - 1;
+					yStart = cubeSize - 1;
+					yEnd = -1;
+					yStep = -1;
 					xStart = cubeSize - 1;
 					xEnd = -1;
 					xStep = -1;
@@ -94,11 +99,11 @@ public partial class RubiksCube : Node3D
 
 	void CreateCubelets()
 	{
-		for(int x = 0; x < cubeSize; x++)
+		for(int z = 0; z < cubeSize; z++)
 		{
 			for(int y = 0; y < cubeSize; y++)
 			{
-				for(int z = 0; z < cubeSize; z++)
+				for(int x = 0; x < cubeSize; x++)
 				{
 					if(IsInside(x, y, z))
 						continue;
@@ -138,38 +143,23 @@ public partial class RubiksCube : Node3D
 		PlaneContainer.AddChild(plane);
 	}
 
-	void ColorFaces()
+	/// <summary>
+	/// Performs some setup on all cubelet faces.
+	/// </summary>
+	private void InitCubeletFaces()
 	{
 		foreach(Cubelet cubelet in cubelets)
 		{
-			if(cubelet == null)
-				continue;
-				
+			if (cubelet == null) continue;
+
 			foreach(CubeletFace cubeletFace in cubelet.activeFaces.Values)
 			{
-				switch (cubeletFace.direction)
-				{
-                    case CubeFaceDirection.up:
-						cubeletFace.SetColor(Colors.Red);
-						break;
-					case CubeFaceDirection.down:
-						cubeletFace.SetColor(Colors.Blue);
-						break;
-					case CubeFaceDirection.left:
-						cubeletFace.SetColor(Colors.Green);
-						break;
-					case CubeFaceDirection.right:
-						cubeletFace.SetColor(Colors.Yellow);
-						break;
-					case CubeFaceDirection.forward:
-						cubeletFace.SetColor(Colors.Purple);
-						break;
-					case CubeFaceDirection.back:
-						cubeletFace.SetColor(Colors.Orange);
-						break;
-				}
+				cubeletFace.ColorFace();
+				cubeletFace.SetAdjacentFaces();
 			}
 		}
-	}
 
+		Entity entity = testAgentScene.Instantiate<Entity>();
+		GetNode<Node3D>("CubeMesh").AddChild(entity);
+	}
 }

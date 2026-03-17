@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://b6bvpcljahhup"
+path="res://.godot/imported/MoveEnd.png-c223623cda7a8f5a916e3e099dd79c82.image"
+
+[deps]
+
+source_file="res://Assets/UI/PathIndicators/MoveEnd.png"
+dest_files=["res://.godot/imported/MoveEnd.png-c223623cda7a8f5a916e3e099dd79c82.image"]
+
+[params]
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://d2v0rb8wynie7"
+path="res://.godot/imported/MoveLine.png-da796c586400d2b8d02ef0707f0a6770.image"
+
+[deps]
+
+source_file="res://Assets/UI/PathIndicators/MoveLine.png"
+dest_files=["res://.godot/imported/MoveLine.png-da796c586400d2b8d02ef0707f0a6770.image"]
+
+[params]
+

@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://bj4e147f30bp"]
+
+[ext_resource type="Script" uid="uid://dmyehjket1enq" path="res://Scripts/Entities/Entity.cs" id="1_0lpdd"]
+[ext_resource type="Material" uid="uid://biv42ps3ay6xo" path="res://Assets/UI/PathIndicators/move_line_material.tres" id="2_27jic"]
+[ext_resource type="Image" uid="uid://d2v0rb8wynie7" path="res://Assets/UI/PathIndicators/MoveLine.png" id="2_o1pmx"]
+[ext_resource type="Image" uid="uid://b6bvpcljahhup" path="res://Assets/UI/PathIndicators/MoveEnd.png" id="3_fg35c"]
+[ext_resource type="Image" uid="uid://cjxa7sdvvv6ya" path="res://Assets/UI/PathIndicators/MoveElbow.png" id="3_kltie"]
+[ext_resource type="Material" uid="uid://bfdgw12ycfvo5" path="res://Assets/UI/PathIndicators/move_end_material.tres" id="3_o1pmx"]
+[ext_resource type="Material" uid="uid://7ddm47hmcvmq" path="res://Assets/UI/PathIndicators/move_elbow_material.tres" id="6_mkfkd"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_16xgf"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" unique_id=880861240]
+mesh = SubResource("SphereMesh_16xgf")
+script = ExtResource("1_0lpdd")
+moveLineImage = ExtResource("2_o1pmx")
+moveElbowImage = ExtResource("3_kltie")
+moveEndImage = ExtResource("3_fg35c")
+moveLineMaterial = ExtResource("2_27jic")
+moveElbowMaterial = ExtResource("6_mkfkd")
+moveEndMaterial = ExtResource("3_o1pmx")

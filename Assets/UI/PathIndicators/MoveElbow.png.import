@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://cjxa7sdvvv6ya"
+path="res://.godot/imported/MoveElbow.png-c3367a0e10e1bbaeabdd1004069ad5c8.image"
+
+[deps]
+
+source_file="res://Assets/UI/PathIndicators/MoveElbow.png"
+dest_files=["res://.godot/imported/MoveElbow.png-c3367a0e10e1bbaeabdd1004069ad5c8.image"]
+
+[params]
+

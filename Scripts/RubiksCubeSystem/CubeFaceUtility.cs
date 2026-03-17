@@ -60,8 +60,8 @@ public static class CubeFaceUtility
             CubeFaceDirection.back,
             new()
             {
-                {CubeFaceDirection.up, CubeFaceDirection.up},
-                {CubeFaceDirection.down, CubeFaceDirection.down},
+                {CubeFaceDirection.up, CubeFaceDirection.down},
+                {CubeFaceDirection.down, CubeFaceDirection.up},
                 {CubeFaceDirection.left, CubeFaceDirection.right},
                 {CubeFaceDirection.right, CubeFaceDirection.left},
             }
@@ -105,9 +105,9 @@ public static class CubeFaceUtility
     }
 
     /// <summary>
-    /// Returns the 4 faces that are cardinally adjacent to currentCubeletFace.
+    /// Returns the 4 faces that are orthogonally adjacent to cubeletFace.
     /// </summary>
-    public static CubeletFace[] GetAdjacentFaces(CubeletFace cubeletFace)
+    public static CubeletFace[] FindAdjacentFaces(CubeletFace cubeletFace)
     {
         CubeletFace[] adjacentFaces = new CubeletFace[4];
         List<Cubelet> currentCubeFace = RubiksCube.cubeletsByFace[cubeletFace.direction];

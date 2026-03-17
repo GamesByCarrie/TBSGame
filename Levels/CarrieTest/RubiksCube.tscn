@@ -21,7 +21,7 @@ camera = NodePath("../MainCamera")
 [node name="Cubelets" type="Node3D" parent="CubeMesh" unique_id=196145075]
 
 [node name="MainCamera" type="Camera3D" parent="." unique_id=246928549]
-transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 5, 5)
+transform = Transform3D(-1, 6.181723e-08, -6.181723e-08, 0, 0.7071067, 0.7071067, 8.742278e-08, 0.7071067, -0.7071067, 0, 5, -5)
 
 [node name="CubeRotateButtons" type="CenterContainer" parent="." unique_id=184449529]
 anchors_preset = 1
@@ -68,7 +68,7 @@ icon = ExtResource("8_iruna")
 
 [connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/YawLeft" to="CubeMesh" method="GUIInput" binds= [Vector3(0, -1, 0)]]
 [connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/YawRight" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 1, 0)]]
-[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchUp" to="CubeMesh" method="GUIInput" binds= [Vector3(-1, 0, 0)]]
-[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchDown" to="CubeMesh" method="GUIInput" binds= [Vector3(1, 0, 0)]]
-[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollRight" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 0, -1)]]
-[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollLeft" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 0, 1)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchUp" to="CubeMesh" method="GUIInput" binds= [Vector3(1, 0, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/PitchDown" to="CubeMesh" method="GUIInput" binds= [Vector3(-1, 0, 0)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollRight" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 0, 1)]]
+[connection signal="pressed" from="CubeRotateButtons/MarginContainer/GridContainer/RollLeft" to="CubeMesh" method="GUIInput" binds= [Vector3(0, 0, -1)]]

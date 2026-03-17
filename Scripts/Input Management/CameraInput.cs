@@ -26,7 +26,7 @@ public partial class CameraInput : Node3D
     public override void _PhysicsProcess(double delta)
 	{
 		// Rotating the cube
-		Rotate(Vector3.Right, mouseDirection.Y * (float)delta);
+		Rotate(Vector3.Right, -mouseDirection.Y * (float)delta);
 
 		if (canRotate)
 		{
@@ -34,7 +34,7 @@ public partial class CameraInput : Node3D
 		}
 		else if (canRoll)
 		{
-			Rotate(Vector3.Forward, mouseDirection.X * (float)delta);
+			Rotate(Vector3.Forward, -mouseDirection.X * (float)delta);
 		}
 
 		mouseDirection = Vector2.Zero;
