@@ -98,8 +98,8 @@ public static class CubeFaceUtility
             CubeFaceDirection.down => Basis.FromEuler(new Vector3(Mathf.Pi, 0, 0)),
             CubeFaceDirection.left => Basis.FromEuler(new Vector3(0, 0, Mathf.Pi / 2)),
             CubeFaceDirection.right => Basis.FromEuler(new Vector3(0, 0, -Mathf.Pi / 2)),
-            CubeFaceDirection.forward => Basis.FromEuler(new Vector3(Mathf.Pi / 2, 0, 0)),
-            CubeFaceDirection.back => Basis.FromEuler(new Vector3(-Mathf.Pi / 2, 0, 0)),
+            CubeFaceDirection.forward => Basis.FromEuler(new Vector3(-Mathf.Pi / 2, 0, 0)),
+            CubeFaceDirection.back => Basis.FromEuler(new Vector3(Mathf.Pi / 2, 0, 0)),
             _ => Basis.Identity
         };
     }
