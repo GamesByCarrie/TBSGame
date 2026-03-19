@@ -19,7 +19,7 @@ public partial class Entity : Node3D
 		occupiedFace = RubiksCube.cubeletsByFace[CubeFaceDirection.up][4].activeFaces[CubeFaceDirection.up];
 		GlobalPosition = occupiedFace.GlobalPosition;
 		//movementSteps = [3, -1, 1, -1, 2];
-		movementSteps = [3, 2];
+		movementSteps = [2, 1, -2, -2];
 		CalculateMoves();
 	}
 
@@ -48,11 +48,13 @@ public partial class Entity : Node3D
 		{
 			CubeFaceDirection direction = (CubeFaceDirection)i;
 			CubeletFace adjacentFace = occupiedFace;
+			StandardMaterial3D indicatorMaterial = null;
+			Image indicatorImage = null;
 
-			foreach (int move in movementSteps)
+			for (int j = 0; j < movementSteps.Length; j++)
 			{
-				int moveAmt = move;
-				if (move < 0)	
+				int moveAmt = movementSteps[j];
+				if (moveAmt < 0)	
 				{
 					moveAmt *= -1;
 					direction = FlipMoveDirection(direction);
@@ -63,13 +65,11 @@ public partial class Entity : Node3D
 					direction = FlipMoveDirection(direction);
 				}
 
-				if (move != movementSteps[0])
+				if (j > 0)
 				{
-					StandardMaterial3D indicatorMaterial = (StandardMaterial3D)moveElbowMaterial.DuplicateDeep();
-					Image indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
 					switch (direction)
 					{
-						case CubeFaceDirection.down:
+						case CubeFaceDirection.up:
 							indicatorImage.FlipY();
 							break;
 						case CubeFaceDirection.left:
@@ -80,17 +80,16 @@ public partial class Entity : Node3D
 					adjacentFace.SetIndicator(indicatorMaterial);
 				}
 
-                for (int j = 0; j < moveAmt; j++)
+                for (int k = 0; k < moveAmt; k++)
 				{
 					CubeletFace prevFace = adjacentFace;
 					adjacentFace = adjacentFace.GetAdjacentFace(direction);
-					StandardMaterial3D indicatorMaterial = null;
-					Image indicatorImage = null;
 
-					if (j < moveAmt - 1)
+					if (k < moveAmt - 1)
 					{
 						indicatorMaterial = (StandardMaterial3D)moveLineMaterial.DuplicateDeep();
 						indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
+
 						switch (direction)
 						{
 							case CubeFaceDirection.left:
@@ -98,15 +97,39 @@ public partial class Entity : Node3D
 								indicatorImage.Rotate90(ClockDirection.Clockwise);
 								break;
 						}	
+
+						switch (adjacentFace.direction)
+						{
+							case CubeFaceDirection.left:
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+								break;
+							case CubeFaceDirection.right:
+								indicatorImage.Rotate90(ClockDirection.Clockwise);
+								break;
+						}
 					}
-					else if (move == movementSteps[^1])
+					else if (j == movementSteps.Length - 1)
 					{
 						indicatorMaterial = (StandardMaterial3D)moveEndMaterial.DuplicateDeep();
 						indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
+
 						switch (direction)
 						{
-							case CubeFaceDirection.down:
+							case CubeFaceDirection.up:
 								indicatorImage.Rotate180();
+								break;
+							case CubeFaceDirection.left:
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+								break;
+							case CubeFaceDirection.right:
+								indicatorImage.Rotate90(ClockDirection.Clockwise);
+								break;
+						}
+
+						switch (adjacentFace.direction)
+						{
+							case CubeFaceDirection.back:
+								indicatorImage.FlipX();
 								break;
 							case CubeFaceDirection.left:
 								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
@@ -120,24 +143,48 @@ public partial class Entity : Node3D
 					{
 						indicatorMaterial = (StandardMaterial3D)moveElbowMaterial.DuplicateDeep();
 						indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
+
 						switch (direction)
 						{
-							case CubeFaceDirection.up:
+							case CubeFaceDirection.down:
 								indicatorImage.FlipY();
 								break;
-							case CubeFaceDirection.left:
+							case CubeFaceDirection.right:
 								indicatorImage.FlipX();
+								break;
+						}
+
+						switch (adjacentFace.direction)
+						{
+							case CubeFaceDirection.back:
+								indicatorImage.FlipX();
+								break;
+							case CubeFaceDirection.left:
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+								break;
+							case CubeFaceDirection.right:
+								indicatorImage.Rotate90(ClockDirection.Clockwise);
+								break;
+						}
+					}
+
+					if (prevFace.cubelet == adjacentFace.cubelet)
+					{
+						direction = CalculateRotatedDirection(prevFace.direction, direction);
+
+						switch (adjacentFace.direction)
+						{
+							case CubeFaceDirection.left:
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+								break;
+							case CubeFaceDirection.right:
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
 								break;
 						}
 					}
 
 					indicatorMaterial.AlbedoTexture = ImageTexture.CreateFromImage(indicatorImage);
 					adjacentFace.SetIndicator(indicatorMaterial);
-
-					if (prevFace.cubelet == adjacentFace.cubelet)
-					{
-						direction = CalculateRotatedDirection(prevFace.direction, direction);
-					}
 				}
 
 				direction = direction switch
