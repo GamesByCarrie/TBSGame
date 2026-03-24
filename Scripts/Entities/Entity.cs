@@ -18,8 +18,8 @@ public partial class Entity : Node3D
 	{
 		occupiedFace = RubiksCube.cubeletsByFace[CubeFaceDirection.up][4].activeFaces[CubeFaceDirection.up];
 		GlobalPosition = occupiedFace.GlobalPosition;
-		//movementSteps = [3, -1, 1, -1, 2];
-		movementSteps = [2, 1, -2, -2];
+		movementSteps = [3, -1, 1, -1, 2];
+		//movementSteps = [2, 1, -2, -2];
 		CalculateMoves();
 	}
 
@@ -29,7 +29,7 @@ public partial class Entity : Node3D
 	}
 
 	/// <summary>
-	/// Helper that flips the given direction to its opposite.
+	/// Flips <c>direction</c> to its opposite.
 	/// </summary>
 	private CubeFaceDirection FlipMoveDirection(CubeFaceDirection direction)
 	{
@@ -42,11 +42,16 @@ public partial class Entity : Node3D
 		};
 	}
 
+	/// <summary>
+	/// Using <c>movementSteps</c>, calculates the entity's
+	/// full movement path starting in the 4 cardinal directions.
+	/// </summary>
 	private void CalculateMoves()
 	{
 		for (int i = 0; i < adjacentFaces.Length; i++)
 		{
 			CubeFaceDirection direction = (CubeFaceDirection)i;
+			CubeFaceDirection prevDirection = direction;
 			CubeletFace adjacentFace = occupiedFace;
 			StandardMaterial3D indicatorMaterial = null;
 			Image indicatorImage = null;
@@ -58,11 +63,19 @@ public partial class Entity : Node3D
 				{
 					moveAmt *= -1;
 					direction = FlipMoveDirection(direction);
+					if (prevDirection == CubeFaceDirection.right || prevDirection == CubeFaceDirection.left)
+					{
+						prevDirection = FlipMoveDirection(prevDirection);
+					}
 				}
 
 				if (adjacentFace.direction == CubeFaceDirection.back)
 				{
 					direction = FlipMoveDirection(direction);
+					if (prevDirection == CubeFaceDirection.up || prevDirection == CubeFaceDirection.down)
+					{
+						prevDirection = FlipMoveDirection(prevDirection);
+					}
 				}
 
 				if (j > 0)
@@ -70,12 +83,27 @@ public partial class Entity : Node3D
 					switch (direction)
 					{
 						case CubeFaceDirection.up:
-							indicatorImage.FlipY();
+							if (prevDirection == CubeFaceDirection.left)
+							{
+								indicatorImage.Rotate90(ClockDirection.Clockwise);
+							}
+							else
+							{
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+							}
 							break;
 						case CubeFaceDirection.left:
-							indicatorImage.FlipX();
+							if (prevDirection == CubeFaceDirection.down)
+							{
+								indicatorImage.Rotate90(ClockDirection.Clockwise);
+							}
+							else
+							{
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+							}
 							break;
 					}
+
 					indicatorMaterial.AlbedoTexture = ImageTexture.CreateFromImage(indicatorImage);
 					adjacentFace.SetIndicator(indicatorMaterial);
 				}
@@ -85,10 +113,23 @@ public partial class Entity : Node3D
 					CubeletFace prevFace = adjacentFace;
 					adjacentFace = adjacentFace.GetAdjacentFace(direction);
 
+					if (prevFace.cubelet == adjacentFace.cubelet)
+					{
+						direction = CalculateRotatedDirection(prevFace.direction, direction);
+					}
+
 					if (k < moveAmt - 1)
 					{
 						indicatorMaterial = (StandardMaterial3D)moveLineMaterial.DuplicateDeep();
 						indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
+
+						switch (adjacentFace.direction)
+						{
+							case CubeFaceDirection.left:
+							case CubeFaceDirection.right:
+								indicatorImage.Rotate90(ClockDirection.Clockwise);
+								break;
+						}
 
 						switch (direction)
 						{
@@ -97,25 +138,15 @@ public partial class Entity : Node3D
 								indicatorImage.Rotate90(ClockDirection.Clockwise);
 								break;
 						}	
-
-						switch (adjacentFace.direction)
-						{
-							case CubeFaceDirection.left:
-								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
-								break;
-							case CubeFaceDirection.right:
-								indicatorImage.Rotate90(ClockDirection.Clockwise);
-								break;
-						}
 					}
 					else if (j == movementSteps.Length - 1)
 					{
 						indicatorMaterial = (StandardMaterial3D)moveEndMaterial.DuplicateDeep();
 						indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
 
-						switch (direction)
+						switch (adjacentFace.direction)
 						{
-							case CubeFaceDirection.up:
+							case CubeFaceDirection.back:
 								indicatorImage.Rotate180();
 								break;
 							case CubeFaceDirection.left:
@@ -126,10 +157,10 @@ public partial class Entity : Node3D
 								break;
 						}
 
-						switch (adjacentFace.direction)
+						switch (direction)
 						{
-							case CubeFaceDirection.back:
-								indicatorImage.FlipX();
+							case CubeFaceDirection.up:
+								indicatorImage.Rotate180();
 								break;
 							case CubeFaceDirection.left:
 								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
@@ -144,20 +175,10 @@ public partial class Entity : Node3D
 						indicatorMaterial = (StandardMaterial3D)moveElbowMaterial.DuplicateDeep();
 						indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
 
-						switch (direction)
-						{
-							case CubeFaceDirection.down:
-								indicatorImage.FlipY();
-								break;
-							case CubeFaceDirection.right:
-								indicatorImage.FlipX();
-								break;
-						}
-
 						switch (adjacentFace.direction)
 						{
 							case CubeFaceDirection.back:
-								indicatorImage.FlipX();
+								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
 								break;
 							case CubeFaceDirection.left:
 								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
@@ -166,16 +187,11 @@ public partial class Entity : Node3D
 								indicatorImage.Rotate90(ClockDirection.Clockwise);
 								break;
 						}
-					}
 
-					if (prevFace.cubelet == adjacentFace.cubelet)
-					{
-						direction = CalculateRotatedDirection(prevFace.direction, direction);
-
-						switch (adjacentFace.direction)
+						switch (direction)
 						{
-							case CubeFaceDirection.left:
-								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+							case CubeFaceDirection.down:
+								indicatorImage.Rotate90(ClockDirection.Clockwise);
 								break;
 							case CubeFaceDirection.right:
 								indicatorImage.Rotate90(ClockDirection.Counterclockwise);
@@ -187,6 +203,7 @@ public partial class Entity : Node3D
 					adjacentFace.SetIndicator(indicatorMaterial);
 				}
 
+				prevDirection = direction;
 				direction = direction switch
                 {
                     CubeFaceDirection.up => CubeFaceDirection.right,
@@ -201,43 +218,43 @@ public partial class Entity : Node3D
 	}
 
 	/// <summary>
-	/// Returns a new direction if a movement from the face pointing
-	/// in startDir direction in the direction of moveDir would result
-	/// in a change in local direction.
+	/// Returns the new movement direction that results from moving in <c>moveDirection</c>
+	/// onto a face whose normal vector does not point in <c>startDirection</c>.
 	/// </summary>
-	/// <param name="startDir">The direction the original face is facing</param>
-	/// <param name="moveDir">The direction of the movement</param>
-	/// <returns>A new direction representing the corresponding rotation
-	/// if the local direction would change.Otherwise, the original
-	/// movement direction.</returns>
-	private CubeFaceDirection CalculateRotatedDirection(CubeFaceDirection startDir, CubeFaceDirection moveDir)
+	/// <param name="startDirection">The direction the original face is facing</param>
+	/// <param name="moveDirection">The direction of the movement</param>
+	private CubeFaceDirection CalculateRotatedDirection(CubeFaceDirection startDirection, CubeFaceDirection moveDirection)
 	{
-		if (moveDir == CubeFaceDirection.right || moveDir == CubeFaceDirection.left)
+		if (moveDirection == CubeFaceDirection.right || moveDirection == CubeFaceDirection.left)
 		{
-			if (startDir == CubeFaceDirection.up)
+			if (startDirection == CubeFaceDirection.up)
 			{
 				return CubeFaceDirection.down;
 			}
-			else if (startDir == CubeFaceDirection.down)
+			else if (startDirection == CubeFaceDirection.down)
 			{
 				return CubeFaceDirection.up;
 			}
 		}
 		else
 		{
-			if (startDir == CubeFaceDirection.right)
+			if (startDirection == CubeFaceDirection.right)
 			{
 				return CubeFaceDirection.left;
 			}
-			else if (startDir == CubeFaceDirection.left)
+			else if (startDirection == CubeFaceDirection.left)
 			{
 				return CubeFaceDirection.right;
 			}
 		}
 
-		return moveDir;
+		return moveDirection;
 	}
 
+	/// <summary>
+	/// Temp function to manually move a character around the screen.
+	/// This will be removed once the first playable character is implemented.
+	/// </summary>
     public override void _UnhandledKeyInput(InputEvent inputEvent)
     {
         if (inputEvent.IsActionPressed("move_up"))
