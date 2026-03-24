@@ -38,8 +38,131 @@ public partial class CubeletFace : MeshInstance3D
 		}
 	}
 
-	public void SetIndicator(Material indicatorMaterial)
+	/// <summary>
+	/// Changes this <c>CubeletFace</c>'s Material Overlay to <c>indicatorMaterial</c>.
+	/// </summary>
+	/// <param name="pathType">The type of indicator to use</param>
+	/// <param name="indicatorMaterial">The indicator material</param>
+	/// <param name="moveDirection">The direction being moved in</param>
+	public void SetIndicator(PathType pathType, StandardMaterial3D indicatorMaterial, CubeFaceDirection moveDirection)
 	{
+		Image indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
+
+		switch (pathType)
+		{
+			case PathType.Straight:
+				switch (direction)
+				{
+					case CubeFaceDirection.left:
+					case CubeFaceDirection.right:
+						indicatorImage.Rotate90(ClockDirection.Clockwise);
+						break;
+				}
+
+				switch (moveDirection)
+				{
+					case CubeFaceDirection.left:
+					case CubeFaceDirection.right:
+						indicatorImage.Rotate90(ClockDirection.Clockwise);
+						break;
+				}	
+				break;
+			case PathType.Turn:
+				switch (direction)
+				{
+					case CubeFaceDirection.back:
+						indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+						break;
+					case CubeFaceDirection.left:
+						indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+						break;
+					case CubeFaceDirection.right:
+						indicatorImage.Rotate90(ClockDirection.Clockwise);
+						break;
+				}
+
+				switch (moveDirection)
+				{
+					case CubeFaceDirection.down:
+						indicatorImage.Rotate90(ClockDirection.Clockwise);
+						break;
+					case CubeFaceDirection.right:
+						indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+						break;
+				}
+				break;
+			case PathType.Fork:
+				break;
+			case PathType.Cross:
+				break;
+			case PathType.End:
+				switch (direction)
+				{
+					case CubeFaceDirection.back:
+						indicatorImage.Rotate180();
+						break;
+					case CubeFaceDirection.left:
+						indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+						break;
+					case CubeFaceDirection.right:
+						indicatorImage.Rotate90(ClockDirection.Clockwise);
+						break;
+				}
+
+				switch (moveDirection)
+				{
+					case CubeFaceDirection.up:
+						indicatorImage.Rotate180();
+						break;
+					case CubeFaceDirection.left:
+						indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+						break;
+					case CubeFaceDirection.right:
+						indicatorImage.Rotate90(ClockDirection.Clockwise);
+						break;
+				}
+				break;
+		}
+
+		indicatorMaterial.AlbedoTexture = ImageTexture.CreateFromImage(indicatorImage);
+		MaterialOverlay = indicatorMaterial;
+	}
+
+	/// <summary>
+	/// An overload for <c>SetIndicator</c> used for a final adjustment to <c>PathType.Turn</c> indicators.
+	/// </summary>
+	/// <param name="indicatorMaterial">The indicator material</param>
+	/// <param name="moveDirection">The direction being moved in</param>
+	/// <param name="prevDirection">The direction that was moved in to arrive at this face</param>
+	public void SetIndicator(StandardMaterial3D indicatorMaterial, CubeFaceDirection moveDirection, CubeFaceDirection prevDirection)
+	{
+		Image indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
+
+		switch (moveDirection)
+		{
+			case CubeFaceDirection.up:
+				if (prevDirection == CubeFaceDirection.left)
+				{
+					indicatorImage.Rotate90(ClockDirection.Clockwise);
+				}
+				else
+				{
+					indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+				}
+				break;
+			case CubeFaceDirection.left:
+				if (prevDirection == CubeFaceDirection.down)
+				{
+					indicatorImage.Rotate90(ClockDirection.Clockwise);
+				}
+				else
+				{
+					indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+				}
+				break;
+		}
+
+		indicatorMaterial.AlbedoTexture = ImageTexture.CreateFromImage(indicatorImage);
 		MaterialOverlay = indicatorMaterial;
 	}
 
