@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bj4e147f30bp"]
 
-[ext_resource type="Script" uid="uid://dmyehjket1enq" path="res://Scripts/Entities/Entity.cs" id="1_0lpdd"]
+[ext_resource type="Script" uid="uid://bgturp2axappe" path="res://Scripts/Entities/PCTEST.cs" id="1_o1pmx"]
 [ext_resource type="Material" uid="uid://biv42ps3ay6xo" path="res://Assets/UI/PathIndicators/move_line_material.tres" id="2_27jic"]
 [ext_resource type="Material" uid="uid://bfdgw12ycfvo5" path="res://Assets/UI/PathIndicators/move_end_material.tres" id="3_o1pmx"]
 [ext_resource type="Material" uid="uid://7ddm47hmcvmq" path="res://Assets/UI/PathIndicators/move_elbow_material.tres" id="6_mkfkd"]
@@ -9,7 +9,7 @@
 
 [node name="MeshInstance3D" type="MeshInstance3D" unique_id=880861240]
 mesh = SubResource("SphereMesh_16xgf")
-script = ExtResource("1_0lpdd")
+script = ExtResource("1_o1pmx")
 moveLineMaterial = ExtResource("2_27jic")
 moveElbowMaterial = ExtResource("6_mkfkd")
 moveEndMaterial = ExtResource("3_o1pmx")
