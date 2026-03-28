@@ -48,6 +48,8 @@ public partial class CubeletFace : MeshInstance3D
 	{
 		Image indicatorImage = (Image)indicatorMaterial.AlbedoTexture.GetImage().DuplicateDeep();
 
+		// The indicator texture may need to be rotated based on the direction this CubeletFace
+		// is facing and the direction the indicator moved in to arrive at this face.
 		switch (pathType)
 		{
 			case PathType.Straight:
@@ -71,7 +73,7 @@ public partial class CubeletFace : MeshInstance3D
 				switch (direction)
 				{
 					case CubeFaceDirection.back:
-						indicatorImage.Rotate90(ClockDirection.Counterclockwise);
+						indicatorImage.Rotate180();
 						break;
 					case CubeFaceDirection.left:
 						indicatorImage.Rotate90(ClockDirection.Counterclockwise);

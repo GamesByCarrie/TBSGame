@@ -13,3 +13,4 @@ script = ExtResource("1_o1pmx")
 moveLineMaterial = ExtResource("2_27jic")
 moveElbowMaterial = ExtResource("6_mkfkd")
 moveEndMaterial = ExtResource("3_o1pmx")
+isPlayerControlled = true

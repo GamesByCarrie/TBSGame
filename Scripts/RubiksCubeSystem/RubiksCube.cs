@@ -32,6 +32,15 @@ public partial class RubiksCube : Node3D
 		return x > 0 && x < cubeSize - 1 && y > 0 && y < cubeSize - 1 && z > 0 && z < cubeSize - 1;
 	}
 
+	/// <summary>
+	/// Populates <c>cubeletsByFace</c> with lists of <c>Cubelets</c> corresponding
+	/// to each face of the greater cube.
+	/// <para>
+	/// <b>Note:</b> Each Cubelet List is ordered and is directly connected to the
+	/// <c>cubeFaceAdjacencies</c> Dictionary. Any changes to the structure of any of
+	/// the Lists must be reflected in the corresponding location in the Dictionary.
+	/// </para>
+	/// </summary>
 	void CreateFaceArrays()
 	{
 		foreach(CubeFaceDirection dir in System.Enum.GetValues(typeof(CubeFaceDirection)))
@@ -72,9 +81,6 @@ public partial class RubiksCube : Node3D
 					break;
 				default:
 					zStart = cubeSize - 1;
-					yStart = cubeSize - 1;
-					yEnd = -1;
-					yStep = -1;
 					xStart = cubeSize - 1;
 					xEnd = -1;
 					xStep = -1;

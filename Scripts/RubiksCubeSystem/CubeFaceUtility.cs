@@ -60,8 +60,8 @@ public static class CubeFaceUtility
             CubeFaceDirection.back,
             new()
             {
-                {CubeFaceDirection.up, CubeFaceDirection.down},
-                {CubeFaceDirection.down, CubeFaceDirection.up},
+                {CubeFaceDirection.up, CubeFaceDirection.up},
+                {CubeFaceDirection.down, CubeFaceDirection.down},
                 {CubeFaceDirection.left, CubeFaceDirection.right},
                 {CubeFaceDirection.right, CubeFaceDirection.left},
             }

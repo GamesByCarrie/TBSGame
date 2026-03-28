@@ -2,9 +2,10 @@ using Godot;
 
 public abstract partial class Entity : Node3D
 {
-	[Export] protected int health = 0;
+	[Export] protected bool isPlayerControlled = false;
+	[Export] protected int maxHealth = 0;
 	/// <summary>
-	/// If <c>damage</c> is negative, the target heals that much.
+	/// If damage is negative, the target heals that much.
 	/// </summary>
 	[Export] protected int damage = 0;
 	/// <summary>
@@ -16,6 +17,7 @@ public abstract partial class Entity : Node3D
 	/// Lower turn order moves first, starting with 0.
 	/// </summary>
 	protected uint turnOrder = 0;
+	protected int currentHealth = 0;
 	protected CubeletFace occupiedFace = null;
 
 	// Called when the node enters the scene tree for the first time.
@@ -23,6 +25,7 @@ public abstract partial class Entity : Node3D
 	{
 		occupiedFace = RubiksCube.cubeletsByFace[CubeFaceDirection.up][4].activeFaces[CubeFaceDirection.up];
 		GlobalPosition = occupiedFace.GlobalPosition;
+		currentHealth = maxHealth;
 	}
 
 	/// <summary>
