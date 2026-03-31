@@ -17,6 +17,7 @@ public abstract partial class Entity : Node3D
 	/// Lower turn order moves first, starting with 0.
 	/// </summary>
 	protected uint turnOrder = 0;
+	protected bool turnComplete = true;
 	protected int currentHealth = 0;
 	protected CubeletFace occupiedFace = null;
 

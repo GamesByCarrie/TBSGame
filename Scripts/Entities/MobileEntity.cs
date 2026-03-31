@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Threading.Tasks;
 
 public abstract partial class MobileEntity : Entity
 {
@@ -7,18 +8,41 @@ public abstract partial class MobileEntity : Entity
 	[Export] protected StandardMaterial3D moveElbowMaterial = null;
 	[Export] protected StandardMaterial3D moveEndMaterial = null;
 
-	protected CubeletFace[] adjacentFaces = null;
+	/// <summary>
+	/// The steps required to move to the correct destination.
+	/// After a complete step, the movement rotates 90 degrees clockwise.
+	/// Movement can be negative to rotate counter-clockwise.
+	/// However, the first step should never be negative.
+	/// </summary>
 	protected int[] movementSteps = null;
+	private int pathLength = 0;
+	protected CubeletFace[][] movementPaths = null;
+	private int numStartDirections = 4;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		base._Ready();
 
-		adjacentFaces = new CubeletFace[4];
+		movementPaths = new CubeletFace[numStartDirections][];
 		movementSteps = [3, -1, 1, -1, 2];
-		CalculateMoves();
+		foreach (int step in movementSteps)
+		{
+			pathLength += Mathf.Abs(step);
+		}
 	}
+
+    public override void _Process(double delta)
+    {
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+
+		if (turnComplete)
+		{
+			turnComplete = false;
+			CalculateMoves();
+			Move(movementPaths[rng.RandiRange(0, numStartDirections - 1)]);
+		}
+    }
 
 	/// <summary>
 	/// Moves the Entity from <c>occupiedFace</c> to the <c>CubeletFace</c> at the
@@ -28,7 +52,27 @@ public abstract partial class MobileEntity : Entity
 	protected void Move(CubeletFace[] path)
 	{
 		// Begin some async subroutine to move along the path
+		TweenPath(path);
 	}
+
+	/// <summary>
+	/// Tweens the Entity across its entire path.
+	/// </summary>
+	private async Task TweenPath(CubeletFace[] path)
+	{
+		foreach(CubeletFace step in path)
+		{
+			occupiedFace = step;
+
+			Tween moveTween = CreateTween();
+			moveTween.TweenProperty(this, "position", occupiedFace.cubelet.Position + occupiedFace.Position, 0.5f);
+
+			await ToSignal(moveTween, Tween.SignalName.Finished);
+		}
+
+		turnComplete = true;
+	}
+
 
 	/// <summary>
 	/// Using <c>Entity.movementSteps</c>, calculates the Entity's
@@ -36,14 +80,29 @@ public abstract partial class MobileEntity : Entity
 	/// </summary>
 	protected virtual void CalculateMoves()
 	{
+		// TEMP SOLUTION TO CLEARING OUT OLD INDICATORS
+		// IN THE FUTURE THIS WILL BE HANDLED BY A TURN
+		// MANAGER OR SOME SIMILAR MANAGER CLASS
+		foreach(CubeletFace[] path in movementPaths)
+		{
+			if (path == null) continue;
+
+			foreach(CubeletFace face in path)
+			{
+				face.MaterialOverlay = null;
+			}
+		}
+
 		// Calculate a path for each direction the Entity can move
-		for (int i = 0; i < adjacentFaces.Length; i++)
+		for (int i = 0; i < numStartDirections; i++)
 		{
 			CubeFaceDirection direction = (CubeFaceDirection)i;
 			CubeFaceDirection prevDirection = direction;
 			CubeletFace adjacentFace = occupiedFace;
 			StandardMaterial3D indicatorMaterial = null;
 			PathType pathType = PathType.Straight;
+			int totalMovementPerformed = 0;
+			movementPaths[i] = new CubeletFace[pathLength];
 
 			// The full movement is broken into directed steps
 			for (int j = 0; j < movementSteps.Length; j++)
@@ -68,6 +127,7 @@ public abstract partial class MobileEntity : Entity
 				{
 					CubeletFace prevFace = adjacentFace;
 					adjacentFace = adjacentFace.GetAdjacentFace(direction);
+					movementPaths[i][k + totalMovementPerformed] = adjacentFace;
 
 					// When moving to a new cube face, the local movement direction may change
 					if (prevFace.cubelet == adjacentFace.cubelet)
@@ -95,6 +155,8 @@ public abstract partial class MobileEntity : Entity
 					adjacentFace.SetIndicator(pathType, indicatorMaterial, direction);
 				}
 
+				totalMovementPerformed += moveAmt;
+
 				// Turning to face the next movement direction
 				prevDirection = direction;
 				direction = direction switch
@@ -105,9 +167,6 @@ public abstract partial class MobileEntity : Entity
                     _ => CubeFaceDirection.up,
                 };
 			}
-
-			// The endpoint of this calculation is considered 'adjacent' to the Entity
-			adjacentFaces[i] = adjacentFace;
 		}
 	}
 
